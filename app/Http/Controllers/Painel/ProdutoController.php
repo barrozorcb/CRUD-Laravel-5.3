@@ -27,7 +27,7 @@ class ProdutoController extends Controller
      */
     public function index()
     {
-        $title = "Lsitagem dos Produtos";
+        $title = "Listagem dos Produtos";
 
         $products = $this->product->all();
 
@@ -41,7 +41,11 @@ class ProdutoController extends Controller
      */
     public function create()
     {
-        //
+        $title = "Cadastrar novo produto";
+
+        $categories = ['eletronicos', 'moveis', 'limpeza', 'banho'];
+
+        return view('painel.products.Create', compact('title', 'categories'));
     }
 
     /**
@@ -52,7 +56,7 @@ class ProdutoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return "Carregando...";
     }
 
     /**
