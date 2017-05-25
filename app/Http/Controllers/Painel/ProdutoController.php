@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Painel;
 
+use App\Http\Requests\Painel\ProductFormRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Painel\Product;
@@ -31,6 +32,7 @@ class ProdutoController extends Controller
 
         $products = $this->product->all();
 
+
         return view('painel.products.Index', compact('products', 'title'));
     }
 
@@ -54,9 +56,21 @@ class ProdutoController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductFormRequest $request)
     {
-        return "Carregando...";
+        $dataForm = $request->all();
+
+        //valida os dados
+        //$this->validate($request, $this->product->rules, $this->product->messages);
+
+        $produto = $this->product->create($dataForm);
+
+        if ($produto){
+            return redirect()->route('produtos.index');
+        }else{
+            return redirect()->back();
+        }
+
     }
 
     /**
