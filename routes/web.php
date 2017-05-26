@@ -13,8 +13,6 @@
 
 Route::get('/', 'Site\SiteController@index');
 
-Route::get('/painel/produtos/tests', 'Painel\ProdutoController@tests');
-
 Route::resource('/painel/produtos', 'Painel\ProdutoController');
 
 

@@ -17,14 +17,16 @@
                 <td>{{$product->name}}</td>
                 <td>{{$product->description}}</td>
                 <td>
-                    <a href="" class="edit actions">
+                    <a href="{{route('produtos.edit', $product->id)}}" class="edit actions">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </a>
-                    <a href="" class="delete actions">
-                        <span class="glyphicon glyphicon-trash"></span>
+                    <a href="{{route('produtos.show', $product->id)}}" class="delete actions">
+                        <span class="glyphicon glyphicon-eye-open"></span>
                     </a>
                 </td>
             </tr>
         @endforeach
     </table>
+
+    {!! $products->links() !!}
 @endsection

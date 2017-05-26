@@ -11,6 +11,7 @@ class ProdutoController extends Controller
 {
 
     private $product;
+    private $totalPorPagina = 3;
 
     /**
      * ProdutoController constructor.
@@ -19,7 +20,6 @@ class ProdutoController extends Controller
     {
         $this->product = $product;
     }
-
 
     /**
      * Display a listing of the resource.
@@ -30,7 +30,7 @@ class ProdutoController extends Controller
     {
         $title = "Listagem dos Produtos";
 
-        $products = $this->product->all();
+        $products = $this->product->paginate($this->totalPorPagina);
 
 
         return view('painel.products.Index', compact('products', 'title'));
@@ -47,7 +47,7 @@ class ProdutoController extends Controller
 
         $categories = ['eletronicos', 'moveis', 'limpeza', 'banho'];
 
-        return view('painel.products.Create', compact('title', 'categories'));
+        return view('painel.products.Create-edit', compact('title', 'categories'));
     }
 
     /**
@@ -81,7 +81,11 @@ class ProdutoController extends Controller
      */
     public function show($id)
     {
-        //
+        $produto = $this->product->find($id);
+
+        $title = "Editar produto: {$produto->name}";
+
+        return view('painel.products.show', compact('title', 'produto'));
     }
 
     /**
@@ -92,7 +96,13 @@ class ProdutoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $produto = $this->product->find($id);
+
+        $title = "Editar produto: {$produto->name}";
+
+        $categories = ['eletronicos', 'moveis', 'limpeza', 'banho'];
+
+        return view('painel.products.Create-edit', compact('title', 'categories', 'produto'));
     }
 
     /**
@@ -102,9 +112,26 @@ class ProdutoController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductFormRequest $request, $id)
     {
-        //
+        //RECUPERA TODOS OS DADOS DO FORMULARIO
+        $dataForm = $request->all();
+
+        //RECUPERA O ITEM PARA EDITAR
+        $produto = $this->product->find($id);
+
+        //VERIFICA SE O PRODUTO ESTÁ ATIVADO
+        $dataForm['active'] = ( !isset($dataForm['active']) ) ? 0 : 1;
+
+        //REALIZA OS UPDATES DO PRODUTO
+        $update = $produto->update($dataForm);
+
+        //VERIFICA SE REALMENTE EDITOU
+        if ($update){
+            return redirect()->route('produtos.index');
+        }else{
+            return redirect()->route('produtos.edit', $id)->with(['errors' => 'Falha ao editar!!']);
+        }
     }
 
     /**
@@ -115,66 +142,14 @@ class ProdutoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $produto = $this->product->find($id);
+
+        $delete = $produto->delete();
+
+        if ( $delete )
+            return redirect()->route('produtos.index');
+        else
+            return redirect()->route('produtos.show', $id)->with(['errors' => 'Falha ao deletar!!']);
     }
 
-    public function tests()
-    {
-
-        /*$prod = $this->product;
-        $prod->name = 'Nome do Produto';
-        $prod->number = 321321;
-        $prod->active = 1;
-        $prod->category = 'eletronicos';
-        $prod->description = 'Descrição produto';
-        $insert = $prod->save();
-
-        if ($insert){
-            return 'Inserido com sucesso!';
-        }else{
-            return 'Falha ao inserir!';
-        }*/
-
-        /*$insert = $this->product->create([
-            'name' => 'Nome do Produto2',
-            'number' => 321321,
-            'active' => 0,
-            'category' => 'eletronicos',
-            'description' => 'Descrição produto'
-        ]);
-
-        if ($insert){
-            return 'Inserido com sucesso!';
-        }else{
-            return 'Falha ao inserir!';
-        }*/
-
-        /*$prod = $this->product->find(3);
-        $prod->name = 'Update';
-        $prod->number = 321321;
-        $prod->active = 1;
-        $prod->category = 'eletronicos';
-        $prod->description = 'Teste update';
-        $update = $prod->save();
-
-        if ($update) {
-            return 'Alterado com sucesso!';
-        } else {
-            return 'Falha ao alterar!';
-        }*/
-
-        /*$prod = $this->product->find(4);
-        $update = $prod->update([
-            'name' => 'Update 2',
-            'number' => '0101010',
-            'active' => 1,
-            'description' => 'Update 2 '
-        ]);
-
-        if ($update) {
-            return 'Alterado com sucesso!';
-        } else {
-            return 'Falha ao alterar!';
-        }*/
-    }
 }
